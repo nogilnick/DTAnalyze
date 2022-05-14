@@ -9,7 +9,7 @@ def GetFlatEstimators(M):
       return M.estimators_.ravel()
    return M.estimators_                   # Looks like RF
 
-def GetLoadingsWrapper(EL, A, v, m0, m1, L):
+def GetActivationsWrapper(EL, A, v, m0, m1, L):
    for Ei in EL:
       GetDTLoadings(A, 
                     m0,
@@ -22,7 +22,7 @@ def GetLoadingsWrapper(EL, A, v, m0, m1, L):
                     Ei.tree_.weighted_n_node_samples,
                     getattr(Ei.tree_, v))
        
-def GetLoadings(M, A, v='impurity', m0=None, m1=None, n_jobs=1, lowMem=False):
+def GetActivations(M, A, v='impurity', m0=None, m1=None, n_jobs=1, lowMem=False):
    '''------------------------------------------------------------------------
    Estimates the contribution of each feature for determining the 
    ultimate predictions.
@@ -44,7 +44,7 @@ def GetLoadings(M, A, v='impurity', m0=None, m1=None, n_jobs=1, lowMem=False):
    # Sum up feature activations for each tree 
    if n_jobs <= 1:
       L  = np.zeros(A.shape, order='C')
-      GetLoadingsWrapper(EL, A, v, m0, m1, L)
+      GetActivationsWrapper(EL, A, v, m0, m1, L)
    else:
       if lowMem: # Each thread works on same output array
          # Each thread works on 1/n_jobs of array
@@ -52,14 +52,14 @@ def GetLoadings(M, A, v='impurity', m0=None, m1=None, n_jobs=1, lowMem=False):
          BL = SplitWork(A.shape[0], n_jobs)
          with parallel_backend('threading', n_jobs=n_jobs):
             # Process activations in parallel for each estimator
-            Parallel()(delayed(GetLoadingsWrapper)(EL, A, v, s, e, L) for s, e in BL)
+            Parallel()(delayed(GetActivationsWrapper)(EL, A, v, s, e, L) for s, e in BL)
       else: # Each thread works on its own output array
          n = len(EL)
          L = [np.zeros(A.shape, order='C') for _ in range(n_jobs)]
          # Each thread works on 1/n_jobs of estimators
          BL = SplitWork(n, n_jobs)
          with parallel_backend('threading', n_jobs=n_jobs):
-            Parallel()(delayed(GetLoadingsWrapper)(EL[s:e], A, v, m0, m1, L[i]) 
+            Parallel()(delayed(GetActivationsWrapper)(EL[s:e], A, v, m0, m1, L[i]) 
                                                           for i, (s, e) in enumerate(BL))
          L = sum(L)
                
