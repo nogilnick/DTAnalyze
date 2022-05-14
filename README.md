@@ -19,6 +19,12 @@ L1 = GetActivations(rfr, A)
 
 ## Install
 
+Install using pip:
+
+`pip install DTAnalyze`
+
+Or you can build manually from this repository:
+
 `python setup.py build_ext`
 
 Then copy build artifact into `DTAnalyze` (sub) folder and put that folder somewhere in your path.
