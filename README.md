@@ -15,3 +15,9 @@ rfr = RandomForestRegressor(n_jobs=4).fit(A, Y)
 
 L1 = GetLoadings(rfr, A)
 ```
+
+## Install
+
+`python setup.py build_ext`
+
+Then copy build artifact into `DTAnalyze` (sub) folder and put that folder somewhere in your path.
