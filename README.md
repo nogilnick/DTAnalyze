@@ -4,8 +4,9 @@ Functions to estimate importance of features in determining predictions for indi
 
 ## Example Usage
 ```
+import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-from DTAnalyze.Activation import GetLoadings
+from DTAnalyze.Activation import GetActivations
 
 A = np.random.rand(256, 3)
 Y = (2 * (A[:, 0] > 0.5) - (A[:, 1] < 0.5) - 
@@ -13,7 +14,7 @@ Y = (2 * (A[:, 0] > 0.5) - (A[:, 1] < 0.5) -
 
 rfr = RandomForestRegressor(n_jobs=4).fit(A, Y)
 
-L1 = GetLoadings(rfr, A)
+L1 = GetActivations(rfr, A)
 ```
 
 ## Install
